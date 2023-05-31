@@ -16,6 +16,7 @@ import downloadPdf from "./download";
 import { useQuery, useMutation } from "react-query";
 
 const App = () => {
+
   const { data: friends, refetch: refetchFriends } = useQuery(
     "friendsCache",
     async () => {
@@ -23,6 +24,7 @@ const App = () => {
       return response.data.data;
     }
   );
+
 
   const {
     data: statsData,
@@ -44,6 +46,18 @@ const App = () => {
   });
 
   const [chart, setChart] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    gender: "",
+    age: ""
+  });
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -57,6 +71,11 @@ const App = () => {
       await addFriendMutation.mutateAsync(friendData);
       refetchFriends();
       refetchStats();
+      setFormData({
+        name: "",
+        gender: "",
+        age: ""
+      });
     } catch (error) {
       console.log(error);
     }
@@ -109,6 +128,7 @@ const App = () => {
     return () => newChart.destroy();
   }, [statsData]);
 
+
   return (
     <>
       <Navbar bg="primary" variant="dark" className="nav">
@@ -135,6 +155,8 @@ const App = () => {
                     type="text"
                     name="name"
                     placeholder="Enter your friend's name"
+                    value={formData.name}
+                    onChange={handleInputChange}
                     required
                   />
                 </Form.Group>
@@ -157,6 +179,8 @@ const App = () => {
                   <Form.Control
                     type="number"
                     name="age"
+                    value={formData.age}
+                    onChange={handleInputChange}
                     placeholder="Enter your friend's age"
                     required
                   />
